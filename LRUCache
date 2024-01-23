@@ -1,0 +1,93 @@
+    class LRUCache(val capacity: Int) {
+
+        class DList<T> {
+            var key: Int = 0
+            var value: Int = 0
+            var left: DList<T>? = null
+            var right: DList<T>? = null
+        }
+
+        val head = DList<Int>()
+        val tail = DList<Int>()
+        val map = HashMap<Int, DList<Int>>()
+        init {
+            head.key = Int.MIN_VALUE
+            tail.key = Int.MAX_VALUE
+            head.right = tail
+            tail.left = head
+        }
+
+        fun get(key: Int): Int {
+            if (map[key] == null) {
+                println("For key $key,  returning -1 ")
+                return -1
+            }
+            val remove = remove(key)
+            remove?.let { insertAsHead(remove) }
+            println("For key $key,  returning ${map[key]!!.value}")
+            return map[key]!!.value
+        }
+
+        fun put(key: Int, value: Int) {
+
+
+            if (map.containsKey(key)) {
+                val removed = remove(key)
+                removed.value = value
+                insertAsHead(removed)
+                return
+            }
+
+            if (map.size == capacity) { // evict
+                removeLast()
+            }
+
+            val element = DList<Int>()
+            element.key = key
+            element.value = value
+            insertAsHead(element)
+        }
+
+        private fun insertAsHead(newHead: DList<Int>) {
+            map[newHead.key] = newHead
+            val secondFromLeft = head.right
+            newHead.left = head
+            newHead.right = secondFromLeft
+            head.right = newHead
+            secondFromLeft!!.left=newHead
+        }
+
+        private fun removeLast(): DList<Int>? {
+            val secondLast = tail.left!!
+            val thirdLast = secondLast.left
+            secondLast.left = null
+            secondLast.right = null
+            map.remove(secondLast.key)
+            tail.left = thirdLast
+            thirdLast?.right = tail
+            return secondLast
+        }
+
+        private fun remove(key: Int): DList<Int> {
+            val middle = map[key] ?: throw Exception("Trying to remove element that doesn't exist")
+            val left = middle.left
+            val right = middle.right
+            middle.left = null
+            middle.right = null
+            left?.right = right
+            right?.left = left
+            map.remove(key)
+            return middle
+        }
+
+        private fun printList(head: DList<Int>?) {
+            var curr = head
+            println("LIST ----")
+            while (curr != null) {
+                print("curr ${curr?.value}, ")
+                curr = curr.right
+            }
+            println()
+        }
+
+    }
