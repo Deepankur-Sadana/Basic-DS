@@ -1,0 +1,52 @@
+class TrieABC {
+
+
+        class Trie() {
+        val root: TrieNode? = TrieNode()
+
+        class TrieNode {
+            val map = arrayOfNulls<TrieNode>(26)
+            var terminatesHere = false
+
+        }
+
+        fun insert(word: String) {
+            var curr = root
+            word.toCharArray().forEach {
+                if (curr!!.map[it - 'a'] == null) {
+                    curr!!.map[it - 'a'] = TrieNode()
+                }
+                curr = curr!!.map[it - 'a']
+            }
+            curr!!.terminatesHere = true
+
+        }
+
+        fun search(word: String): Boolean {
+            var curr = root
+            word.toCharArray().forEach {
+                if (curr!!.map[it - 'a'] == null) {
+                    return false
+                }
+                curr = curr!!.map[it - 'a']
+            }
+            return curr!!.terminatesHere
+
+
+        }
+
+        fun startsWith(prefix: String): Boolean {
+            var curr = root
+            prefix.toCharArray().forEach {
+                if (curr!!.map[it - 'a'] == null) {
+                    return false
+                }
+                curr = curr!!.map[it - 'a']
+            }
+            return true
+
+        }
+
+    }
+
+}
