@@ -1,0 +1,47 @@
+
+    class Trie() {
+        val root: TrieNode? = TrieNode()
+
+        class TrieNode {
+            val map = HashMap<Char, TrieNode>()
+            var terminatesHere = false
+        }
+
+        fun insert(word: String) {
+            var curr = root
+            word.toCharArray().forEach {
+                if (curr!!.map[it] == null)
+                    curr!!.map[it] = TrieNode()
+                curr = curr!!.map[it]
+            }
+            curr!!.terminatesHere = true
+
+        }
+
+        fun search(word: String): Boolean {
+            var curr = root
+            word.toCharArray().forEach {
+                if (curr!!.map[it] == null) {
+                    return false
+                }
+
+                curr = curr!!.map[it]
+            }
+            return curr!!.terminatesHere
+
+
+        }
+
+        fun startsWith(prefix: String): Boolean {
+            var curr = root
+            prefix.toCharArray().forEach {
+                if (curr!!.map[it] == null) {
+                    return false
+                }
+                curr = curr!!.map[it]
+            }
+            return true
+
+        }
+
+    }
