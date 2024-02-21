@@ -1,0 +1,70 @@
+
+
+
+import java.util.PriorityQueue
+
+
+
+
+class Solution {
+
+    //source -> Pair(cost, destination)
+    val adj = HashMap<Int, ArrayList<Pair<Int, Int>>>()
+    fun networkDelayTime(times: Array<IntArray>, n: Int, k: Int): Int {
+        val graph = ArrayList<ArrayList<Int>>()
+        for (i in 0..n) {
+            graph.add(ArrayList())
+        }
+        for (i in times.indices) {
+            val time = times[i]
+            val from = time[0]
+            val to = time[1]
+            val cost = time[2]
+            adj.putIfAbsent(from, ArrayList())
+            adj[from]!!.add(Pair(cost, to))
+//            adj[to]!!.add(Pair(cost, from)) // for 2 way relationShip
+        }
+
+        val cost = IntArray(n + 1) { Int.MAX_VALUE }
+        dj(cost, k, n)
+        var res = Int.MIN_VALUE
+        for(i in 1..cost.size - 1){
+            // println("$it")
+            if (cost[i] == Int.MAX_VALUE) return -1
+            res = Math.max(res, cost[i])
+        }
+        return res
+    }
+
+    fun dj(cost: IntArray, source: Int, n: Int) {
+        /** First:- cost to reach node, second:- node id **/
+        val pq = PriorityQueue<Pair<Int, Int>>(compareBy { it.first })
+        pq.add(Pair(0 , source))
+        cost[source] = 0
+
+        while (pq.isNotEmpty()) {
+            val poll = pq.poll()!!
+            val costToReachPoll = poll.first
+            val pollNode = poll.second
+
+            if (costToReachPoll > cost[pollNode]) {
+                continue;
+            }
+
+//            Pair(cost, destination)
+            if (adj[pollNode] == null) continue
+            val costAndDestPairs = adj[pollNode]!!
+            for (i in costAndDestPairs.indices) {
+                val costDestPair = costAndDestPairs[i]
+                val costN = costDestPair.first
+                val dest = costDestPair.second
+                val newDis = costToReachPoll + costN
+                if (cost[dest] > newDis) {
+                    cost[dest] = newDis
+                    pq.add(Pair(cost[dest] , dest))
+                }
+            }
+
+        }
+    }
+}
